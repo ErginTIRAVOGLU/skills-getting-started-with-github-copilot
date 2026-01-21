@@ -26,7 +26,44 @@ activities = {
         "schedule": "Fridays, 3:30 PM - 5:00 PM",
         "max_participants": 12,
         "participants": ["michael@mergington.edu", "daniel@mergington.edu"]
-    },
+        },
+    "Soccer Team": {
+        "description": "Practice soccer skills and compete in inter-school matches",
+        "schedule": "Tuesdays and Thursdays, 4:00 PM - 5:30 PM",
+        "max_participants": 22,
+        "participants": ["alex@mergington.edu"]
+        },
+    "Swimming Club": {
+        "description": "Improve swimming techniques and train for competitions",
+        "schedule": "Mondays and Wednesdays, 3:00 PM - 4:30 PM",
+        "max_participants": 15,
+        "participants": ["sarah@mergington.edu", "james@mergington.edu"]
+        },
+    "Drama Club": {
+        "description": "Participate in theatrical productions and acting workshops",
+        "schedule": "Wednesdays, 3:30 PM - 5:30 PM",
+        "max_participants": 25,
+        "participants": ["lily@mergington.edu"]
+        },
+    "Art Workshop": {
+        "description": "Explore various art mediums including painting, drawing, and sculpture",
+        "schedule": "Thursdays, 3:00 PM - 5:00 PM",
+        "max_participants": 18,
+        "participants": ["mia@mergington.edu", "noah@mergington.edu"]
+        },
+    "Debate Team": {
+        "description": "Develop critical thinking and public speaking skills through competitive debates",
+        "schedule": "Fridays, 4:00 PM - 6:00 PM",
+        "max_participants": 16,
+        "participants": ["ethan@mergington.edu"]
+        },
+    "Science Olympiad": {
+        "description": "Prepare for science competitions and conduct research projects",
+        "schedule": "Saturdays, 10:00 AM - 12:00 PM",
+        "max_participants": 20,
+        "participants": ["ava@mergington.edu", "william@mergington.edu"]
+        },         
+    
     "Programming Class": {
         "description": "Learn programming fundamentals and build software projects",
         "schedule": "Tuesdays and Thursdays, 3:30 PM - 4:30 PM",
@@ -63,5 +100,27 @@ def signup_for_activity(activity_name: str, email: str):
     activity = activities[activity_name]
 
     # Add student
+    # Validate student is not already signed up
+    if email in activity["participants"]:
+        raise HTTPException(status_code=400, detail="Student already signed up for this activity")
     activity["participants"].append(email)
     return {"message": f"Signed up {email} for {activity_name}"}
+
+
+@app.delete("/activities/{activity_name}/unregister")
+def unregister_from_activity(activity_name: str, email: str):
+    """Unregister a student from an activity"""
+    # Validate activity exists
+    if activity_name not in activities:
+        raise HTTPException(status_code=404, detail="Activity not found")
+
+    # Get the specific activity
+    activity = activities[activity_name]
+
+    # Validate student is signed up
+    if email not in activity["participants"]:
+        raise HTTPException(status_code=400, detail="Student is not signed up for this activity")
+    
+    # Remove student
+    activity["participants"].remove(email)
+    return {"message": f"Removed {email} from {activity_name}"}
